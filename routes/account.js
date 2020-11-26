@@ -24,6 +24,7 @@ router.post('/reg', (request, response) => {
                 message: "User has been added"
             });
         }
+        console.log('New user registered: ' + newUser);
     });
 });
 
