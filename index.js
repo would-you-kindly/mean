@@ -12,6 +12,12 @@ const app = express();
 
 const port = 3000;
 
+app.use(passport.initialize());
+app.use(passport.session());
+
+// Вызовется функция, для которой в config/passport указан module.exports
+require('./config/passport')(passport);
+
 app.use(cors());
 // Будем получать данные в формате json
 app.use(bodyParser.json());
