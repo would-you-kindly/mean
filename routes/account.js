@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../models/user');
+const Post = require('../models/post');
 const passport = require('passport');
 const jwt = require('jsonwebtoken');
 const config = require('../config/db');
@@ -69,10 +70,29 @@ router.post('/auth', (request, response) => {
 });
 
 // Запрещаем входить пользователю в кабинет, пока он не авторизирован (пока сессия = false)
-router.get('/dashboard', passport.authenticate('jwt', {
-    session: false
-}), (request, response) => {
-    response.send("Dashboard page");
+router.post('/dashboard', (request, response) => {
+    let newPost = new Post({
+        category: request.body.category,
+        title: request.body.title,
+        photo: request.body.photo,
+        text: request.body.text,
+        author: request.body.author,
+        date: request.body.date,
+    });
+    Post.addPost(newPost, (err, post) => {
+        if (err) {
+            response.json({
+                success: false,
+                message: "Post has not been added"
+            });
+        } else {
+            response.json({
+                success: true,
+                message: "Post has been added"
+            });
+        }
+        // console.log('New post added: ' + newPost);
+    });
 });
 
 module.exports = router;

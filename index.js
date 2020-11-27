@@ -7,6 +7,7 @@ const passport = require('passport');
 const path = require('path');
 const config = require('./config/db');
 const account = require('./routes/account');
+const Post = require('./models/post');
 
 const app = express();
 
@@ -20,9 +21,19 @@ require('./config/passport')(passport);
 
 app.use(cors());
 // Будем получать данные в формате json
-app.use(bodyParser.json());
+app.use(bodyParser.json({
+    limit: '50mb'
+}));
+app.use(bodyParser.urlencoded({
+    limit: '50mb',
+    extended: true,
+    parameterLimit: 1000000
+}));
 
-mongoose.connect(config.db, { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect(config.db, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+});
 
 // Обработчики событий подключения к БД
 mongoose.connection.on('connected', () => {
@@ -32,12 +43,12 @@ mongoose.connection.on('error', (err) => {
     console.log("Not successful connection" + err);
 });
 
-app.listen(port, function() {
+app.listen(port, function () {
     console.log("The server was running on the port: " + port);
 });
 
 app.get('/', (request, response) => {
-    response.send("Home page");
+    Post.find().then(posts => response.json(posts));
 });
 
 // Если адрес начинается на /account, то вызываем модуль account
