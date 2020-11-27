@@ -51,5 +51,17 @@ app.get('/', (request, response) => {
     Post.find().then(posts => response.json(posts));
 });
 
+app.get('/post/:id', (request, response) => {
+    let url = request.url.split('/');
+    let id = url[2];
+    Post.findById(id).then(post => response.json(post));
+});
+
+app.delete('/post/:id', (request, response) => {
+    let url = request.url.split('/');
+    let id = url[2];
+    Post.deleteOne({_id: id}).then(() => response.json({success: true}));
+});
+
 // Если адрес начинается на /account, то вызываем модуль account
 app.use('/account', account);
